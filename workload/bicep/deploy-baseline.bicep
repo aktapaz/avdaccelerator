@@ -73,7 +73,7 @@ param avdDomainJoinUserName string = 'none'
 
 @sys.description('AVD session host domain join password. (Default: none)')
 @secure()
-param avdDomainJoinUserPassword string = 'none'
+param avdDomainJoinUserPassword string 
 
 @sys.description('OU path to join AVd VMs. (Default: "")')
 param avdOuPath string = ''
@@ -150,7 +150,7 @@ param deployPrivateEndpointKeyvaultStorage bool = true
 
 @sys.description('Create new  Azure private DNS zones for private endpoints. (Default: true)')
 param createPrivateDnsZones bool = true
-
+#disable-next-line no-hardcoded-env-urls
 @sys.description('Use existing Azure private DNS zone for Azure files privatelink.file.core.windows.net or privatelink.file.core.usgovcloudapi.net. (Default: "")')
 param avdVnetPrivateDnsZoneFilesId string = ''
 
@@ -494,12 +494,14 @@ var varSessionHostLocationAcronym = varLocations[varSessionHostLocationLowercase
 var varManagementPlaneLocationAcronym = varLocations[varManagementPlaneLocationLowercase].acronym
 var varLocations = loadJsonContent('../variables/locations.json')
 var varTimeZoneSessionHosts = varLocations[varSessionHostLocationLowercase].timeZone
+#disable-next-line no-unused-vars
 var varTimeZoneManagementPlane = varLocations[varManagementPlaneLocationLowercase].timeZone
 var varManagementPlaneNamingStandard = '${varDeploymentPrefixLowercase}-${varDeploymentEnvironmentLowercase}-${varManagementPlaneLocationAcronym}'
 var varComputeStorageResourcesNamingStandard = '${varDeploymentPrefixLowercase}-${varDeploymentEnvironmentLowercase}-${varSessionHostLocationAcronym}'
 var varDiskEncryptionSetName = avdUseCustomNaming
   ? '${ztDiskEncryptionSetCustomNamePrefix}-${varComputeStorageResourcesNamingStandard}-001'
   : 'des-zt-${varComputeStorageResourcesNamingStandard}-001'
+  #disable-next-line no-unused-vars
 var varZtManagedIdentityName = avdUseCustomNaming
   ? '${ztManagedIdentityCustomName}-${varComputeStorageResourcesNamingStandard}-001'
   : 'id-zt-${varComputeStorageResourcesNamingStandard}-001'
@@ -969,6 +971,7 @@ var verResourceGroups = [
 // =========== //
 
 //  Telemetry Deployment
+#disable-next-line no-deployments-resources
 resource telemetrydeployment 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
   name: varTelemetryId
   location: avdManagementPlaneLocation
@@ -1176,7 +1179,7 @@ module zeroTrust './modules/zeroTrust/deploy.bicep' = if (diskZeroTrust && avdDe
     diskZeroTrust: diskZeroTrust
     serviceObjectsRgName: varServiceObjectsRgName
     computeObjectsRgName: varComputeObjectsRgName
-    vaultSku: varWrklKeyVaultSku
+    vaultSku: 'premium' //varWrklKeyVaultSku
     diskEncryptionKeyExpirationInDays: diskEncryptionKeyExpirationInDays
     diskEncryptionKeyExpirationInEpoch: varDiskEncryptionKeyExpirationInEpoch
     diskEncryptionSetName: varDiskEncryptionSetName
